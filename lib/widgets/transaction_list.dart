@@ -4,53 +4,115 @@ import 'package:intl/intl.dart';
 
 class TransacionList extends StatelessWidget {
   final List<Transaction> transactions;
+  final Function deleteTx;
 
-  TransacionList(this.transactions);
+  TransacionList(this.transactions, this.deleteTx);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 350,
-      child: ListView.builder(
-        itemBuilder: (ctx, idx) {
-          return Card(
-              child: Row(
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Theme.of(context).primaryColor,
-                    width: 2,
-                  ),
-                ),
-                child: Text(
-                  '\$${transactions[idx].amount.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                padding: EdgeInsets.all(10),
-              ),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      child: transactions.isEmpty
+          ? Column(
+              children: <Widget>[
                 Text(
-                  transactions[idx].title,
+                  'No transactions are added yet!',
                   style: Theme.of(context).textTheme.title,
                 ),
-                Text(
-                  DateFormat.yMMMd().format(transactions[idx].date),
-                  style: TextStyle(color: Colors.grey),
-                )
-              ]),
-            ],
-          ));
-        },
-        itemCount: transactions.length,
-        // children: transactions.map((trx) {
-        //    }).toList(),
-      ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 200,
+                  child: Image.asset(
+                    './assets/images/waiting.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              itemBuilder: (ctx, idx) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: FittedBox(
+                          child: Text(
+                            '\$${transactions[idx].amount.toStringAsFixed(2)}',
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      transactions[idx].title,
+                      style: Theme.of(context).textTheme.title,
+                    ),
+                    subtitle: Text(
+                      DateFormat.yMMMd().format(transactions[idx].date),
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).errorColor,
+                      ),
+                      onPressed: () => deleteTx(transactions[idx].id),
+                    ),
+                  ),
+                );
+              },
+              itemCount: transactions.length,
+            ),
     );
   }
 }
+
+// class _CustomListTile extends StatelessWidget {
+//   const _CustomListTile({
+//     Key key,
+//     @required this.transactions,
+//   }) : super(key: key);
+
+//   final List<Transaction> transactions;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Card(
+//         child: Row(
+//       children: [
+//         Container(
+//           margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+//           decoration: BoxDecoration(
+//             border: Border.all(
+//               color: Theme.of(context).primaryColor,
+//               width: 2,
+//             ),
+//           ),
+//           child: Text(
+//             '\$${transactions[idx].amount.toStringAsFixed(2)}',
+//             style: TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 20,
+//               color: Theme.of(context).primaryColor,
+//             ),
+//           ),
+//           padding: EdgeInsets.all(10),
+//         ),
+//         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//           Text(
+//             transactions[idx].title,
+//             style: Theme.of(context).textTheme.title,
+//           ),
+//           Text(
+//             DateFormat.yMMMd().format(transactions[idx].date),
+//             style: TextStyle(color: Colors.grey),
+//           )
+//         ]),
+//       ],
+//     ));
+//   }
+// }

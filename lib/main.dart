@@ -1,4 +1,5 @@
-import 'package:expense_tracker/widgets/new_transaction.dart';
+import 'widgets/chart.dart';
+import 'widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
 import 'models/transaction.dart';
 import 'widgets/transaction_list.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
+              button: TextStyle(color: Colors.white),
             ),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
@@ -44,31 +46,44 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [
-    Transaction(
-      id: "101",
-      title: "New Shoe",
-      amount: 69.99,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: "102",
-      title: "Weekly Grocercies",
-      amount: 29.99,
-      date: DateTime.now(),
-    ),
+    // Transaction(
+    //   id: "101",
+    //   title: "New Shoe",
+    //   amount: 69.99,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: "102",
+    //   title: "Weekly Grocercies",
+    //   amount: 29.99,
+    //   date: DateTime.now(),
+    // ),
   ];
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime chosenDate) {
     final newTx = Transaction(
         title: txTitle,
         amount: txAmount,
-        date: DateTime.now(),
+        date: chosenDate,
         id: DateTime.now().toString());
 
     setState(() {
       _userTransactions.add(newTx);
       print(_userTransactions.length);
     });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransactions.removeWhere((tx) => tx.id == id);
+    });
+  }
+
+  List<Transaction> get _recentTransactions {
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
   }
 
   void _startAddNewTransaction(BuildContext ctx) {
@@ -100,15 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              child: Card(
-                color: Colors.amber,
-                child: Text('CHART HERE!'),
-                elevation: 5,
-              ),
-            ),
-            TransacionList(_userTransactions),
+            Chart(_recentTransactions),
+            TransacionList(_userTransactions, _deleteTransaction),
           ],
         ),
       ),
